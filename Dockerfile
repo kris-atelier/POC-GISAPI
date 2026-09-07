@@ -1,8 +1,10 @@
-FROM gradle:7.5.1-jdk17
+FROM gradle:7.5.1-jdk17 AS build
 WORKDIR /app
-ADD build.gradle.kts /app/
-RUN gradle build -x test --parallel --continue > /dev/null 2>&1 || true
+COPY . .
+RUN ./gradlew clean bootJar -x test --no-daemon
 
-COPY . /app
-RUN gradle clean build --no-daemon
-CMD java -jar build/libs/*.jar
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

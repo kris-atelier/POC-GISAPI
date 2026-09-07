@@ -1,6 +1,9 @@
 # POC-GISAPI
 
-A small Kotlin/Spring Boot proof of concept for serving spatial polygon data from PostgreSQL + PostGIS over HTTP.
+[![CI](https://github.com/kris-atelier/POC-GISAPI/actions/workflows/ci.yml/badge.svg)](https://github.com/kris-atelier/POC-GISAPI/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+A Kotlin/Spring Boot proof of concept for serving spatial polygon data from PostgreSQL + PostGIS over HTTP.
 
 ## What it demonstrates
 
@@ -10,13 +13,18 @@ A small Kotlin/Spring Boot proof of concept for serving spatial polygon data fro
 - Paginated polygon retrieval
 - Swagger UI for API exploration
 - Docker-based local environment
+- GitHub Actions validation with a real PostGIS service and runtime API smoke test
+
+For the smaller Spring Boot starter used before this end-to-end example, see [poc-gis-spring](https://github.com/kris-atelier/poc-gis-spring).
 
 ## Requirements
 
 ### Easiest path
+
 - Docker + Docker Compose
 
 ### Local JVM path
+
 - JDK 17
 - PostgreSQL with PostGIS enabled
 
@@ -74,6 +82,20 @@ Example:
 curl 'http://localhost:8080/Polygon/GetAll?page=0&size=20'
 ```
 
-## Notes
+## Verification
 
-This repository is intentionally a proof of concept, not a production-ready GIS service. Authentication, migrations, production observability, rate limiting, and hardened deployment configuration are out of scope.
+GitHub Actions validates the complete POC path:
+
+1. Starts PostgreSQL with PostGIS.
+2. Runs the Gradle test/build lifecycle on JDK 17.
+3. Builds the application Docker image.
+4. Starts the application container.
+5. Calls `/Polygon/GetAll?page=0&size=1` as a runtime smoke test.
+
+This keeps the public example continuously checked for both build-time and basic runtime regressions.
+
+## Scope
+
+This repository is intentionally a proof of concept rather than a production-ready GIS service. Authentication, database migrations, production observability, rate limiting and hardened deployment configuration are out of scope.
+
+Licensed under the MIT License.

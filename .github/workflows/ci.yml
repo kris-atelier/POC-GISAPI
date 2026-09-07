@@ -49,3 +49,25 @@ jobs:
 
       - name: Build application image
         run: docker build -t poc-gisapi .
+
+      - name: Run application container
+        run: >-
+          docker run -d --name poc-gisapi
+          --network host
+          -e DB_URL=jdbc:postgresql://localhost:5432/GIS
+          -e DB_USERNAME=postgres
+          -e DB_PASSWORD=postgres
+          -e JPA_SHOW_SQL=false
+          poc-gisapi
+
+      - name: Smoke test API
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent 'http://localhost:8080/Polygon/GetAll?page=0&size=1' > /tmp/response.json; then
+              cat /tmp/response.json
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs poc-gisapi
+          exit 1
